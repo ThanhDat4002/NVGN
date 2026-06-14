@@ -112,11 +112,14 @@ void clearDatabase() {
     File file = root.openNextFile();
     while (file) {
         String filename = file.name();
-        // Xóa tất cả các tệp bắt đầu bằng "/u_"
-        if (filename.startsWith("/u_")) {
-            String fullpath = "/" + filename;
+        String userFilePath = filename;
+        if (!userFilePath.startsWith("/")) {
+            userFilePath = "/" + userFilePath;
+        }
+
+        if (userFilePath.startsWith("/u_") && userFilePath.endsWith(".json")) {
             file.close();
-            LittleFS.remove(fullpath);
+            LittleFS.remove(userFilePath);
         } else {
             file.close();
         }
