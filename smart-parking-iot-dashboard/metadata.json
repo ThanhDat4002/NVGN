@@ -1,0 +1,5 @@
+{
+  "name": "Smart Parking IoT Dashboard",
+  "description": "A real-time IoT management system for smart parking, featuring dashboard stats, user management, and MQTT integration.",
+  "requestFramePermissions": []
+}
