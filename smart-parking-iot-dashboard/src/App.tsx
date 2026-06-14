@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  LayoutDashboard, 
-  Users, 
-  History, 
-  Wallet, 
-  Car, 
-  LogOut, 
-  Bell, 
-  Search, 
-  Plus, 
-  Lock, 
-  Unlock, 
-  ArrowUpRight, 
+import {
+  LayoutDashboard,
+  Users,
+  History,
+  Wallet,
+  Car,
+  LogOut,
+  Bell,
+  Search,
+  Plus,
+  Lock,
+  Unlock,
+  ArrowUpRight,
   ArrowDownLeft,
   CircleDollarSign,
   Activity,
@@ -138,13 +138,13 @@ export default function App() {
     barrier_out: 'closed'
   });
   const [mqttLogs, setMqttLogs] = useState<MqttLog[]>([]);
-  
+
   const [searchQuery, setSearchQuery] = useState('');
   const [isTopUpModalOpen, setIsTopUpModalOpen] = useState(false);
   const [isUserModalOpen, setIsUserModalOpen] = useState(false); // Used for both Add and Edit
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [topUpAmount, setTopUpAmount] = useState<number>(0);
-  
+
   const [userModalMode, setUserModalMode] = useState<'add' | 'edit'>('add');
   const [userFormData, setUserFormData] = useState({
     uid: '',
@@ -355,15 +355,15 @@ export default function App() {
   };
 
   // Filter users based on query
-  const filteredUsers = users.filter(u => 
-    u.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+  const filteredUsers = users.filter(u =>
+    u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     u.plateNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
     u.uid.toLowerCase().includes(searchQuery.toLowerCase()) ||
     u.studentId.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // --- SVG Charts Calculations ---
-  
+
   // Weekly revenue simulation/mock based on transactions
   const getWeeklyRevenueData = () => {
     const weekdays = ['T.Hai', 'T.Ba', 'T.Tư', 'T.Năm', 'T.Sáu', 'T.Bảy', 'C.Nhật'];
@@ -398,7 +398,7 @@ export default function App() {
 
   return (
     <div className="h-screen w-screen flex bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-slate-100 overflow-hidden font-sans">
-      
+
       {/* Sidebar */}
       <aside className="w-64 bg-slate-900/40 backdrop-blur-xl border-r border-slate-800/60 flex flex-col justify-between shrink-0">
         <div>
@@ -408,43 +408,43 @@ export default function App() {
               <Car size={22} className="animate-pulse" />
             </div>
             <div>
-              <h1 className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-indigo-200 to-white bg-clip-text text-transparent">SmartPark</h1>
+              <h1 className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-indigo-200 to-white bg-clip-text text-transparent">Bãi xe PTIT</h1>
               <p className="text-[10px] text-slate-400 font-semibold tracking-widest uppercase">Dashboard v2.0</p>
             </div>
           </div>
 
           {/* Navigation */}
           <nav className="p-4 space-y-1.5">
-            <NavItem 
-              icon={<LayoutDashboard size={18} />} 
-              label="Tổng quan" 
-              active={activeTab === 'dashboard'} 
-              onClick={() => setActiveTab('dashboard')} 
+            <NavItem
+              icon={<LayoutDashboard size={18} />}
+              label="Tổng quan"
+              active={activeTab === 'dashboard'}
+              onClick={() => setActiveTab('dashboard')}
             />
-            <NavItem 
-              icon={<Users size={18} />} 
-              label="Thành viên & Thẻ" 
-              active={activeTab === 'users'} 
-              onClick={() => setActiveTab('users')} 
+            <NavItem
+              icon={<Users size={18} />}
+              label="Thành viên & Thẻ"
+              active={activeTab === 'users'}
+              onClick={() => setActiveTab('users')}
             />
-            <NavItem 
-              icon={<Car size={18} />} 
-              label="Xe đang đỗ" 
-              active={activeTab === 'parked'} 
+            <NavItem
+              icon={<Car size={18} />}
+              label="Xe đang đỗ"
+              active={activeTab === 'parked'}
               badge={stats.activeVehicles}
-              onClick={() => setActiveTab('parked')} 
+              onClick={() => setActiveTab('parked')}
             />
-            <NavItem 
-              icon={<History size={18} />} 
-              label="Lịch sử vào ra" 
-              active={activeTab === 'parking-logs'} 
-              onClick={() => setActiveTab('parking-logs')} 
+            <NavItem
+              icon={<History size={18} />}
+              label="Lịch sử vào ra"
+              active={activeTab === 'parking-logs'}
+              onClick={() => setActiveTab('parking-logs')}
             />
-            <NavItem 
-              icon={<Wallet size={18} />} 
-              label="Lịch sử ví" 
-              active={activeTab === 'transactions'} 
-              onClick={() => setActiveTab('transactions')} 
+            <NavItem
+              icon={<Wallet size={18} />}
+              label="Lịch sử ví"
+              active={activeTab === 'transactions'}
+              onClick={() => setActiveTab('transactions')}
             />
 
           </nav>
@@ -475,14 +475,14 @@ export default function App() {
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col overflow-hidden">
-        
+
         {/* Header */}
         <header className="h-16 bg-slate-900/20 backdrop-blur-md border-b border-slate-800/60 px-8 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4 bg-slate-900/50 border border-slate-800/80 px-4 py-2 rounded-xl w-96 focus-within:border-indigo-500 transition-colors">
             <Search size={16} className="text-slate-400" />
-            <input 
-              type="text" 
-              placeholder="Tìm kiếm: Tên, biển số, RFID, Mã SV..." 
+            <input
+              type="text"
+              placeholder="Tìm kiếm: Tên, biển số, RFID, Mã SV..."
               className="bg-transparent border-none outline-none text-xs w-full text-slate-100 placeholder-slate-500"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -496,7 +496,7 @@ export default function App() {
               Cổng vào: {deviceStatus.barrier_in === 'open' ? 'Mở' : 'Đóng'} | Cổng ra: {deviceStatus.barrier_out === 'open' ? 'Mở' : 'Đóng'}
             </div>
 
-            <button 
+            <button
               onClick={fetchAllData}
               className="p-2 text-slate-400 hover:text-indigo-400 hover:bg-slate-800/50 rounded-xl transition-all border border-slate-800"
               title="Làm mới dữ liệu"
@@ -519,10 +519,10 @@ export default function App() {
         {/* Scrollable Workspace */}
         <div className="flex-1 overflow-y-auto p-8 space-y-8">
           <AnimatePresence mode="wait">
-            
+
             {/* TAB: DASHBOARD */}
             {activeTab === 'dashboard' && (
-              <motion.div 
+              <motion.div
                 key="dashboard"
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -531,280 +531,47 @@ export default function App() {
               >
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
-                  <StatCard 
-                    title="Tổng số tài khoản" 
-                    value={stats.totalUsers} 
-                    icon={<Users className="text-violet-400" />} 
+                  <StatCard
+                    title="Tổng số tài khoản"
+                    value={stats.totalUsers}
+                    icon={<Users className="text-violet-400" />}
                     glowColor="rgba(139, 92, 246, 0.15)"
                     label="Thẻ đã đăng ký"
                   />
-                  <StatCard 
-                    title="Xe đang trong bãi" 
-                    value={stats.activeVehicles} 
-                    icon={<Car className="text-indigo-400" />} 
+                  <StatCard
+                    title="Xe đang trong bãi"
+                    value={stats.activeVehicles}
+                    icon={<Car className="text-indigo-400" />}
                     glowColor="rgba(99, 102, 241, 0.15)"
                     label="Giám sát trực tiếp"
                   />
-                  <StatCard 
-                    title="Lượt gửi trong ngày" 
-                    value={stats.dailyEntries} 
-                    icon={<Activity className="text-emerald-400" />} 
+                  <StatCard
+                    title="Lượt gửi trong ngày"
+                    value={stats.dailyEntries}
+                    icon={<Activity className="text-emerald-400" />}
                     glowColor="rgba(16, 185, 129, 0.15)"
                     label="Lượt quét vào bãi"
                   />
-                  <StatCard 
-                    title="Doanh thu hôm nay" 
-                    value={`${(stats.dailyRevenue).toLocaleString()}đ`} 
-                    icon={<CircleDollarSign className="text-sky-400" />} 
+                  <StatCard
+                    title="Doanh thu hôm nay"
+                    value={`${(stats.dailyRevenue).toLocaleString()}đ`}
+                    icon={<CircleDollarSign className="text-sky-400" />}
                     glowColor="rgba(14, 165, 233, 0.15)"
                     label="Tổng trừ ví RFID"
                   />
-                  <StatCard 
-                    title="Thẻ đang khóa" 
-                    value={stats.totalLocked} 
-                    icon={<Lock className="text-red-400" />} 
+                  <StatCard
+                    title="Thẻ đang khóa"
+                    value={stats.totalLocked}
+                    icon={<Lock className="text-red-400" />}
                     glowColor="rgba(239, 68, 68, 0.15)"
                     label="Tài khoản vi phạm"
                     warning={stats.totalLocked > 0}
                   />
                 </div>
 
-                {/* Dashboard Charts */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  {/* Revenue Line Chart */}
-                  <div className="bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl p-6 shadow-2xl">
-                    <div className="flex items-center justify-between mb-6">
-                      <h3 className="font-bold text-sm text-slate-300 flex items-center gap-2">
-                        <CircleDollarSign size={16} className="text-sky-400" />
-                        Biểu đồ Doanh thu (Tuần này)
-                      </h3>
-                      <span className="text-[10px] bg-slate-800 text-sky-400 px-2 py-0.5 rounded-full font-bold uppercase">VNĐ</span>
-                    </div>
-                    {/* SVG Line Chart */}
-                    <div className="w-full h-48 flex flex-col justify-between">
-                      <svg viewBox="0 0 500 200" className="w-full h-40 overflow-visible">
-                        <defs>
-                          <linearGradient id="chartGlow" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#0ea5e9" stopOpacity="0.4" />
-                            <stop offset="100%" stopColor="#0ea5e9" stopOpacity="0.0" />
-                          </linearGradient>
-                        </defs>
-                        {/* Grid lines */}
-                        <line x1="0" y1="40" x2="500" y2="40" stroke="#1e293b" strokeDasharray="3,3" />
-                        <line x1="0" y1="90" x2="500" y2="90" stroke="#1e293b" strokeDasharray="3,3" />
-                        <line x1="0" y1="140" x2="500" y2="140" stroke="#1e293b" strokeDasharray="3,3" />
-                        
-                        {/* Area Gradient */}
-                        <path 
-                          d={`M 15 170 
-                             L 85 ${170 - (weeklyRev.data[0] / 350000) * 130} 
-                             L 155 ${170 - (weeklyRev.data[1] / 350000) * 130} 
-                             L 225 ${170 - (weeklyRev.data[2] / 350000) * 130} 
-                             L 295 ${170 - (weeklyRev.data[3] / 350000) * 130} 
-                             L 365 ${170 - (weeklyRev.data[4] / 350000) * 130} 
-                             L 435 ${170 - (weeklyRev.data[5] / 350000) * 130} 
-                             L 485 ${170 - (weeklyRev.data[6] / 350000) * 130} 
-                             L 485 170 Z`} 
-                          fill="url(#chartGlow)" 
-                        />
-                        
-                        {/* Line Path */}
-                        <path 
-                          d={`M 15 170 
-                             L 85 ${170 - (weeklyRev.data[0] / 350000) * 130} 
-                             L 155 ${170 - (weeklyRev.data[1] / 350000) * 130} 
-                             L 225 ${170 - (weeklyRev.data[2] / 350000) * 130} 
-                             L 295 ${170 - (weeklyRev.data[3] / 350000) * 130} 
-                             L 365 ${170 - (weeklyRev.data[4] / 350000) * 130} 
-                             L 435 ${170 - (weeklyRev.data[5] / 350000) * 130} 
-                             L 485 ${170 - (weeklyRev.data[6] / 350000) * 130}`} 
-                          fill="none" 
-                          stroke="#0ea5e9" 
-                          strokeWidth="3" 
-                          strokeLinecap="round"
-                          className="drop-shadow-[0_0_8px_rgba(14,165,233,0.5)]"
-                        />
-
-                        {/* Interactive Data Nodes */}
-                        {weeklyRev.data.map((val, idx) => {
-                          const x = idx === 0 ? 15 : idx === 6 ? 485 : 15 + idx * 70;
-                          const y = 170 - (val / 350000) * 130;
-                          return (
-                            <g key={idx} className="group cursor-pointer">
-                              <circle 
-                                cx={x} 
-                                cy={y} 
-                                r="4" 
-                                fill="#ffffff" 
-                                stroke="#0ea5e9" 
-                                strokeWidth="2" 
-                                className="transition-all duration-200 group-hover:r-6" 
-                              />
-                              <foreignObject x={x - 30} y={y - 28} width="60" height="24" className="opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                                <div className="bg-slate-950 border border-slate-800 text-[9px] font-bold text-center py-0.5 rounded text-sky-400">
-                                  {Math.round(val / 1000)}k
-                                </div>
-                              </foreignObject>
-                            </g>
-                          );
-                        })}
-                      </svg>
-                      {/* X axis labels */}
-                      <div className="flex justify-between text-[10px] text-slate-500 font-bold px-1 font-mono">
-                        {weeklyRev.labels.map((lbl, idx) => <span key={idx}>{lbl}</span>)}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Hourly Traffic Bar Chart */}
-                  <div className="bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl p-6 shadow-2xl">
-                    <div className="flex items-center justify-between mb-6">
-                      <h3 className="font-bold text-sm text-slate-300 flex items-center gap-2">
-                        <Activity size={16} className="text-emerald-400" />
-                        Lượt vào / ra (Theo giờ)
-                      </h3>
-                      <div className="flex items-center gap-3 text-[10px]">
-                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-indigo-500"></span>Vào</span>
-                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-emerald-500"></span>Ra</span>
-                      </div>
-                    </div>
-                    {/* SVG Bar Chart */}
-                    <div className="w-full h-48 flex flex-col justify-between">
-                      <svg viewBox="0 0 500 200" className="w-full h-40 overflow-visible">
-                        {/* Grid lines */}
-                        <line x1="0" y1="40" x2="500" y2="40" stroke="#1e293b" strokeDasharray="3,3" />
-                        <line x1="0" y1="90" x2="500" y2="90" stroke="#1e293b" strokeDasharray="3,3" />
-                        <line x1="0" y1="140" x2="500" y2="140" stroke="#1e293b" strokeDasharray="3,3" />
-
-                        {/* Bars rendering */}
-                        {hourlyTraffic.labels.map((lbl, idx) => {
-                          const groupX = 25 + idx * 80;
-                          
-                          // heights scaled max 50 units -> 140px max
-                          const entryH = (hourlyTraffic.entries[idx] / 50) * 130;
-                          const exitH = (hourlyTraffic.exits[idx] / 50) * 130;
-                          
-                          const entryY = 160 - entryH;
-                          const exitY = 160 - exitH;
-
-                          return (
-                            <g key={idx} className="group">
-                              {/* Entry Bar */}
-                              <rect 
-                                x={groupX} 
-                                y={entryY} 
-                                width="14" 
-                                height={entryH} 
-                                fill="#6366f1" 
-                                rx="3"
-                                className="transition-all duration-200 hover:fill-indigo-400 cursor-pointer"
-                              />
-                              {/* Exit Bar */}
-                              <rect 
-                                x={groupX + 18} 
-                                y={exitY} 
-                                width="14" 
-                                height={exitH} 
-                                fill="#10b981" 
-                                rx="3"
-                                className="transition-all duration-200 hover:fill-emerald-400 cursor-pointer"
-                              />
-                              
-                              {/* Tooltip */}
-                              <foreignObject x={groupX - 12} y={Math.min(entryY, exitY) - 30} width="60" height="30" className="opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                                <div className="bg-slate-950 border border-slate-800 text-[8px] font-bold py-0.5 rounded px-1 flex flex-col items-center">
-                                  <span className="text-indigo-400">Vào: {hourlyTraffic.entries[idx]}</span>
-                                  <span className="text-emerald-400">Ra: {hourlyTraffic.exits[idx]}</span>
-                                </div>
-                              </foreignObject>
-                            </g>
-                          );
-                        })}
-                        <line x1="0" y1="160" x2="500" y2="160" stroke="#334155" strokeWidth="2" />
-                      </svg>
-                      {/* X axis labels */}
-                      <div className="flex justify-between text-[10px] text-slate-500 font-bold font-mono px-3">
-                        {hourlyTraffic.labels.map((lbl, idx) => <span key={idx}>{lbl}</span>)}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Donut Chart Vehicle Type Ratio */}
-                  <div className="bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl p-6 shadow-2xl">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-bold text-sm text-slate-300 flex items-center gap-2">
-                        <Car size={16} className="text-indigo-400" />
-                        Tỷ lệ phương tiện trong bãi
-                      </h3>
-                    </div>
-                    
-                    <div className="flex items-center justify-around h-48">
-                      {/* SVG Donut */}
-                      <div className="relative w-32 h-32">
-                        <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90">
-                          {/* Background Circle */}
-                          <circle cx="50" cy="50" r="38" fill="none" stroke="#1e293b" strokeWidth="10" />
-                          
-                          {/* Bike circle (emerald) */}
-                          <circle 
-                            cx="50" 
-                            cy="50" 
-                            r="38" 
-                            fill="none" 
-                            stroke="#10b981" 
-                            strokeWidth="10" 
-                            strokeDasharray="238.76"
-                            strokeDashoffset={238.76 - (238.76 * (vehicleDist.bikeCount / (stats.activeVehicles || 1)))} 
-                            className="transition-all duration-500 ease-out"
-                          />
-                          
-                          {/* Car circle (violet - stacked) */}
-                          <circle 
-                            cx="50" 
-                            cy="50" 
-                            r="38" 
-                            fill="none" 
-                            stroke="#8b5cf6" 
-                            strokeWidth="10" 
-                            strokeDasharray="238.76"
-                            strokeDashoffset={238.76 - (238.76 * (vehicleDist.carCount / (stats.activeVehicles || 1)))}
-                            className="transition-all duration-500 ease-out"
-                            style={{
-                              transform: `rotate(${(vehicleDist.bikeCount / (stats.activeVehicles || 1)) * 360}deg)`,
-                              transformOrigin: '50% 50%'
-                            }}
-                          />
-                        </svg>
-                        <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <span className="text-2xl font-black font-mono text-white">{stats.activeVehicles}</span>
-                          <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Xe đỗ</span>
-                        </div>
-                      </div>
-
-                      {/* Legends */}
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-3.5 h-3.5 rounded bg-violet-500 shadow-md shadow-violet-500/20"></div>
-                          <div className="text-left">
-                            <p className="text-[10px] text-slate-400 font-semibold uppercase">Ô tô</p>
-                            <p className="text-sm font-bold text-slate-100">{vehicleDist.carCount} xe ({vehicleDist.carPercent}%)</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <div className="w-3.5 h-3.5 rounded bg-emerald-500 shadow-md shadow-emerald-500/20"></div>
-                          <div className="text-left">
-                            <p className="text-[10px] text-slate-400 font-semibold uppercase">Xe máy</p>
-                            <p className="text-sm font-bold text-slate-100">{vehicleDist.bikeCount} xe ({vehicleDist.bikePercent}%)</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
                 {/* Live Activity & Remote Control Gate */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  
+
                   {/* Live Activity Feed */}
                   <div className="lg:col-span-2 bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
                     <div className="p-5 border-b border-slate-800/60 flex items-center justify-between">
@@ -829,8 +596,8 @@ export default function App() {
                             <div className="flex items-center gap-4">
                               <div className={cn(
                                 "w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold shadow-md",
-                                log.status === 'parked' 
-                                  ? "bg-indigo-950/60 text-indigo-400 border border-indigo-900/40" 
+                                log.status === 'parked'
+                                  ? "bg-indigo-950/60 text-indigo-400 border border-indigo-900/40"
                                   : "bg-emerald-950/60 text-emerald-400 border border-emerald-900/40"
                               )}>
                                 {log.status === 'parked' ? <ArrowDownLeft size={16} /> : <ArrowUpRight size={16} />}
@@ -867,7 +634,7 @@ export default function App() {
                         <Settings size={16} className="text-indigo-400" />
                         <h3 className="font-bold text-sm text-slate-300">Điều khiển Barrier Từ xa</h3>
                       </div>
-                      
+
                       <div className="space-y-4">
                         {/* Gate IN */}
                         <div className="p-3 bg-slate-950/40 rounded-xl border border-slate-800 flex items-center justify-between">
@@ -881,13 +648,13 @@ export default function App() {
                             </span>
                           </div>
                           <div className="flex gap-2">
-                            <button 
+                            <button
                               onClick={() => triggerBarrierControl('in', 'open')}
                               className="px-2.5 py-1.5 text-[10px] font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors flex items-center gap-1 shadow-lg shadow-indigo-500/10"
                             >
                               <Play size={10} /> Mở
                             </button>
-                            <button 
+                            <button
                               onClick={() => triggerBarrierControl('in', 'close')}
                               className="px-2.5 py-1.5 text-[10px] font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors flex items-center gap-1 border border-slate-700"
                             >
@@ -908,13 +675,13 @@ export default function App() {
                             </span>
                           </div>
                           <div className="flex gap-2">
-                            <button 
+                            <button
                               onClick={() => triggerBarrierControl('out', 'open')}
                               className="px-2.5 py-1.5 text-[10px] font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors flex items-center gap-1 shadow-lg shadow-indigo-500/10"
                             >
                               <Play size={10} /> Mở
                             </button>
-                            <button 
+                            <button
                               onClick={() => triggerBarrierControl('out', 'close')}
                               className="px-2.5 py-1.5 text-[10px] font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors flex items-center gap-1 border border-slate-700"
                             >
@@ -946,7 +713,7 @@ export default function App() {
 
             {/* TAB: MEMBERS / CARDS */}
             {activeTab === 'users' && (
-              <motion.div 
+              <motion.div
                 key="users"
                 initial={{ opacity: 0, x: 15 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -958,7 +725,7 @@ export default function App() {
                     <h2 className="font-bold text-base text-slate-300">Danh sách thành viên đăng ký thẻ</h2>
                     <p className="text-xs text-slate-500">Quản lý định danh NFC RFID và số dư tài khoản</p>
                   </div>
-                  <button 
+                  <button
                     onClick={() => {
                       setUserFormData({
                         uid: '',
@@ -1023,8 +790,8 @@ export default function App() {
                             <td className="px-6 py-4">
                               <span className={cn(
                                 "px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider",
-                                user.status === 'active' 
-                                  ? "bg-emerald-950/60 text-emerald-400 border border-emerald-900/40" 
+                                user.status === 'active'
+                                  ? "bg-emerald-950/60 text-emerald-400 border border-emerald-900/40"
                                   : "bg-red-950/60 text-red-400 border border-red-900/40"
                               )}>
                                 {user.status === 'active' ? 'Hoạt động' : 'Đã khóa'}
@@ -1032,7 +799,7 @@ export default function App() {
                             </td>
                             <td className="px-6 py-4 text-right">
                               <div className="flex items-center justify-end gap-2">
-                                <button 
+                                <button
                                   onClick={() => {
                                     setSelectedUser(user);
                                     setTopUpAmount(0);
@@ -1043,7 +810,7 @@ export default function App() {
                                 >
                                   <Wallet size={16} />
                                 </button>
-                                <button 
+                                <button
                                   onClick={() => {
                                     setUserFormData({
                                       uid: user.uid,
@@ -1061,19 +828,19 @@ export default function App() {
                                 >
                                   <Edit3 size={16} />
                                 </button>
-                                <button 
+                                <button
                                   onClick={() => toggleUserStatus(user.uid, user.status)}
                                   className={cn(
                                     "p-1.5 rounded-lg transition-colors border border-transparent",
-                                    user.status === 'active' 
-                                      ? "text-red-400 hover:bg-red-950/40 hover:border-red-900/30" 
+                                    user.status === 'active'
+                                      ? "text-red-400 hover:bg-red-950/40 hover:border-red-900/30"
                                       : "text-emerald-400 hover:bg-emerald-950/40 hover:border-emerald-900/30"
                                   )}
                                   title={user.status === 'active' ? "Khóa thẻ này" : "Mở khóa thẻ này"}
                                 >
                                   {user.status === 'active' ? <Lock size={16} /> : <Unlock size={16} />}
                                 </button>
-                                <button 
+                                <button
                                   onClick={() => handleDeleteUser(user.uid)}
                                   className="p-1.5 text-rose-500 hover:bg-rose-950/40 rounded-lg transition-colors border border-transparent hover:border-rose-900/30"
                                   title="Xóa tài khoản"
@@ -1093,7 +860,7 @@ export default function App() {
 
             {/* TAB: VEHICLES IN PARK */}
             {activeTab === 'parked' && (
-              <motion.div 
+              <motion.div
                 key="parked"
                 initial={{ opacity: 0, x: 15 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -1159,7 +926,7 @@ export default function App() {
 
             {/* TAB: PARKING LOGS */}
             {activeTab === 'parking-logs' && (
-              <motion.div 
+              <motion.div
                 key="parking-logs"
                 initial={{ opacity: 0, x: -15 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -1222,7 +989,7 @@ export default function App() {
 
             {/* TAB: WALLET TRANSACTIONS */}
             {activeTab === 'transactions' && (
-              <motion.div 
+              <motion.div
                 key="transactions"
                 initial={{ opacity: 0, x: -15 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -1268,8 +1035,8 @@ export default function App() {
                             <td className="px-6 py-4">
                               <span className={cn(
                                 "px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider",
-                                tx.type === 'topup' 
-                                  ? "bg-emerald-950/60 text-emerald-400 border border-emerald-900/40" 
+                                tx.type === 'topup'
+                                  ? "bg-emerald-950/60 text-emerald-400 border border-emerald-900/40"
                                   : "bg-rose-950/60 text-rose-400 border border-rose-900/40"
                               )}>
                                 {tx.type === 'topup' ? 'Nạp tiền' : 'Trừ phí xe ra'}
@@ -1303,7 +1070,7 @@ export default function App() {
       <AnimatePresence>
         {isTopUpModalOpen && selectedUser && (
           <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
@@ -1318,8 +1085,8 @@ export default function App() {
               <div className="p-6 space-y-4 text-left">
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Số tiền cần nạp (VNĐ)</label>
-                  <input 
-                    type="number" 
+                  <input
+                    type="number"
                     className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none font-bold text-xl text-indigo-400 placeholder-slate-700"
                     placeholder="Nhập số tiền..."
                     value={topUpAmount || ''}
@@ -1328,7 +1095,7 @@ export default function App() {
                 </div>
                 <div className="grid grid-cols-4 gap-2">
                   {[20000, 50000, 100000, 200000].map(amt => (
-                    <button 
+                    <button
                       key={amt}
                       onClick={() => setTopUpAmount(amt)}
                       className="py-2 bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 rounded-xl text-xs font-bold text-slate-300 transition-colors"
@@ -1339,7 +1106,7 @@ export default function App() {
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   {[500000, 1000000].map(amt => (
-                    <button 
+                    <button
                       key={amt}
                       onClick={() => setTopUpAmount(amt)}
                       className="py-2 bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 rounded-xl text-xs font-bold text-slate-300 transition-colors"
@@ -1350,7 +1117,7 @@ export default function App() {
                 </div>
               </div>
               <div className="p-6 bg-slate-950/40 border-t border-slate-800/60 flex gap-3">
-                <button 
+                <button
                   onClick={() => {
                     setIsTopUpModalOpen(false);
                     setSelectedUser(null);
@@ -1359,7 +1126,7 @@ export default function App() {
                 >
                   Hủy bỏ
                 </button>
-                <button 
+                <button
                   onClick={handleTopUp}
                   className="flex-1 py-2.5 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/10 transition-colors text-xs border border-indigo-500/20"
                 >
@@ -1375,7 +1142,7 @@ export default function App() {
       <AnimatePresence>
         {isUserModalOpen && (
           <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
@@ -1389,18 +1156,18 @@ export default function App() {
                   {userModalMode === 'add' ? 'Nhập thông tin để liên kết ID thẻ RFID NFC' : 'Thay đổi thông tin và số dư tài khoản'}
                 </p>
               </div>
-              
+
               <div className="p-6 space-y-4 text-left">
                 {/* NFC RFID UID */}
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Mã số thẻ RFID (NFC UID)</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     disabled={userModalMode === 'edit'}
                     className={cn(
                       "w-full px-3 py-2 rounded-xl bg-slate-950 border text-xs outline-none transition-all font-mono",
-                      userModalMode === 'edit' 
-                        ? "border-slate-800 text-slate-500 cursor-not-allowed" 
+                      userModalMode === 'edit'
+                        ? "border-slate-800 text-slate-500 cursor-not-allowed"
                         : "border-slate-800 focus:border-indigo-500 text-indigo-400 placeholder-slate-700"
                     )}
                     placeholder="Quẹt thẻ RFID hoặc tự nhập UID..."
@@ -1412,8 +1179,8 @@ export default function App() {
                 {/* Name */}
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Họ và tên thành viên *</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 focus:border-indigo-500 text-xs text-slate-200 placeholder-slate-700 outline-none"
                     placeholder="Nguyễn Văn A..."
                     value={userFormData.name}
@@ -1424,8 +1191,8 @@ export default function App() {
                 {/* Student / Employee ID */}
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Mã sinh viên / Mã nhân viên *</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 focus:border-indigo-500 text-xs text-slate-200 placeholder-slate-700 font-mono outline-none"
                     placeholder="SV12345 / NV098..."
                     value={userFormData.studentId}
@@ -1437,7 +1204,7 @@ export default function App() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Loại xe *</label>
-                    <select 
+                    <select
                       className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 focus:border-indigo-500 text-xs text-slate-200 outline-none"
                       value={userFormData.vehicleType}
                       onChange={(e) => setUserFormData(prev => ({ ...prev, vehicleType: e.target.value as 'Car' | 'Motorbike' }))}
@@ -1448,8 +1215,8 @@ export default function App() {
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Biển số xe *</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 focus:border-indigo-500 text-xs text-slate-200 text-center uppercase font-mono outline-none placeholder-slate-700"
                       placeholder="29A-12345..."
                       value={userFormData.plateNumber}
@@ -1463,8 +1230,8 @@ export default function App() {
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
                     {userModalMode === 'add' ? 'Số dư ví khởi tạo (VNĐ)' : 'Cấu hình lại số dư ví (VNĐ)'}
                   </label>
-                  <input 
-                    type="number" 
+                  <input
+                    type="number"
                     className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 focus:border-indigo-500 text-xs text-slate-200 font-mono outline-none"
                     value={userFormData.balance || 0}
                     onChange={(e) => setUserFormData(prev => ({ ...prev, balance: Number(e.target.value) }))}
@@ -1473,13 +1240,13 @@ export default function App() {
               </div>
 
               <div className="p-6 bg-slate-950/40 border-t border-slate-800/60 flex gap-3">
-                <button 
+                <button
                   onClick={() => setIsUserModalOpen(false)}
                   className="flex-1 py-2.5 rounded-xl font-bold text-slate-400 bg-slate-800 hover:bg-slate-700 transition-colors text-xs"
                 >
                   Hủy bỏ
                 </button>
-                <button 
+                <button
                   onClick={handleSaveUser}
                   className="flex-1 py-2.5 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/10 transition-colors text-xs border border-indigo-500/20"
                 >
@@ -1507,12 +1274,12 @@ interface NavItemProps {
 
 function NavItem({ icon, label, active, badge, badgeColor = 'indigo', onClick }: NavItemProps) {
   return (
-    <button 
+    <button
       onClick={onClick}
       className={cn(
         "flex items-center justify-between px-4 py-3 w-full rounded-xl transition-all duration-200 text-left border border-transparent font-medium text-xs",
-        active 
-          ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/25 border-indigo-500/10 font-bold" 
+        active
+          ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/25 border-indigo-500/10 font-bold"
           : "text-slate-400 hover:bg-slate-900/40 hover:text-slate-200 hover:border-slate-800/50"
       )}
     >
@@ -1523,8 +1290,8 @@ function NavItem({ icon, label, active, badge, badgeColor = 'indigo', onClick }:
       {badge !== undefined && badge > 0 && (
         <span className={cn(
           "text-[9px] font-black font-mono px-2 py-0.5 rounded-full",
-          badgeColor === 'indigo' 
-            ? "bg-indigo-900/60 text-indigo-300 border border-indigo-800/40" 
+          badgeColor === 'indigo'
+            ? "bg-indigo-900/60 text-indigo-300 border border-indigo-800/40"
             : "bg-amber-950/60 text-amber-400 border border-amber-900/40"
         )}>
           {badge}
@@ -1546,7 +1313,7 @@ interface StatCardProps {
 
 function StatCard({ title, value, icon, glowColor, label, warning = false }: StatCardProps) {
   return (
-    <div 
+    <div
       className={cn(
         "bg-slate-900/40 backdrop-blur-md p-5 rounded-2xl border border-slate-800/60 shadow-xl flex flex-col justify-between hover:border-slate-700/60 transition-all duration-300 relative group overflow-hidden",
         warning && "border-red-900/40 shadow-red-950/5"
@@ -1556,18 +1323,18 @@ function StatCard({ title, value, icon, glowColor, label, warning = false }: Sta
       }}
     >
       {/* Decorative radial blur backing */}
-      <div 
+      <div
         className="absolute -right-4 -bottom-4 w-24 h-24 rounded-full blur-2xl opacity-10 group-hover:opacity-25 transition-opacity duration-300 pointer-events-none"
         style={{ backgroundColor: glowColor }}
       />
-      
+
       <div className="flex items-center justify-between mb-4 z-10">
         <span className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">{title}</span>
         <div className="w-8 h-8 rounded-lg bg-slate-950/60 border border-slate-850 flex items-center justify-center text-indigo-400 shadow-inner">
           {icon}
         </div>
       </div>
-      
+
       <div className="text-left z-10">
         <h4 className="text-xl font-black text-slate-100 font-mono tracking-tight leading-none mb-1">{value}</h4>
         <span className="text-[9px] font-bold text-slate-500 tracking-wider uppercase">{label}</span>

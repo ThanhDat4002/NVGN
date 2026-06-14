@@ -30,7 +30,8 @@ enum ScreenMode {
     SCREEN_IDLE,
     SCREEN_CHECKIN,
     SCREEN_CHECKOUT,
-    SCREEN_MANUAL_OPEN,
+    SCREEN_MANUAL_BARRIER,
+    SCREEN_CASH_PAYMENT_PENDING,
     SCREEN_WARNING
 };
 
@@ -47,6 +48,18 @@ void drawTextCentered(const String& text, int16_t y, uint16_t color, uint8_t siz
     tft.setTextColor(color);
     tft.setTextSize(size);
     tft.setCursor(x, y);
+    tft.print(text);
+}
+
+void drawBoldTextCentered(const String& text, int16_t y, uint16_t color, uint8_t size = 1) {
+    int16_t textWidth = text.length() * 6 * size;
+    int16_t x = (SCREEN_WIDTH - textWidth) / 2;
+    if (x < 0) x = 0;
+    tft.setTextColor(color);
+    tft.setTextSize(size);
+    tft.setCursor(x, y);
+    tft.print(text);
+    tft.setCursor(x + 1, y);
     tft.print(text);
 }
 
@@ -70,51 +83,38 @@ void drawMultilineText(const String& text, int16_t x, int16_t y, uint16_t color)
     }
 }
 
+void drawWifiIcon(int16_t centerX, int16_t centerY, uint16_t color) {
+    tft.drawPixel(centerX, centerY + 8, color);
+    tft.drawFastHLine(centerX - 1, centerY + 7, 3, color);
+    tft.drawFastHLine(centerX - 3, centerY + 4, 7, color);
+    tft.drawFastHLine(centerX - 6, centerY, 13, color);
+    tft.drawFastHLine(centerX - 9, centerY - 5, 19, color);
+}
+
 void drawIdleStaticLayout() {
-    drawHeader(COLOR_HEADER, "PARKING");
+    drawHeader(COLOR_HEADER, "PTIT");
     drawSectionBanner("SAN SANG QUET THE", COLOR_HEADER);
 
-    tft.fillRoundRect(8, 54, 66, 42, 6, COLOR_PANEL);
-    tft.drawRoundRect(8, 54, 66, 42, 6, COLOR_HEADER);
-    tft.setCursor(16, 63);
-    tft.setTextSize(1);
-    tft.setTextColor(COLOR_HEADER);
-    tft.print("XE TRONG BAI");
-
-    tft.fillRoundRect(84, 54, 68, 42, 6, COLOR_PANEL);
-    tft.drawRoundRect(84, 54, 68, 42, 6, COLOR_HEADER);
-    tft.setCursor(96, 63);
+    tft.fillRoundRect(18, 54, 124, 42, 6, COLOR_PANEL);
+    tft.drawRoundRect(18, 54, 124, 42, 6, COLOR_HEADER);
+    tft.setCursor(46, 61);
     tft.setTextColor(COLOR_HEADER);
     tft.setTextSize(1);
-    tft.print("KET NOI");
-
-    tft.drawRoundRect(8, 100, 144, 10, 4, COLOR_BLUE);
-    tft.fillRoundRect(12, 103, 136, 4, 2, COLOR_BLUE);
-    tft.setCursor(24, 88);
-    tft.setTextSize(1);
-    tft.setTextColor(COLOR_BLUE);
-    tft.print("VUI LONG QUET THE !");
+    tft.print(" ");
 
     tft.fillRect(0, FOOTER_Y, SCREEN_WIDTH, SCREEN_HEIGHT - FOOTER_Y, COLOR_HEADER);
 }
 
 void drawIdleCount(int parkedCount) {
-    tft.fillRect(18, 76, 48, 18, COLOR_PANEL);
-    tft.setCursor(24, 79);
-    tft.setTextSize(2);
-    tft.setTextColor(COLOR_GREEN);
-    if (parkedCount < 10) tft.print("0");
-    tft.print(parkedCount);
+    (void)parkedCount;
 }
 
 void drawIdleConnection(bool wifiOk, bool mqttOk) {
-    tft.fillRect(90, 76, 56, 10, COLOR_PANEL);
-    tft.setCursor(92, 78);
+    tft.fillRect(26, 68, 108, 24, COLOR_PANEL);
+    drawWifiIcon(50, 74, wifiOk ? COLOR_GREEN : COLOR_RED);
+
+    tft.setCursor(76, 78);
     tft.setTextSize(1);
-    tft.setTextColor(wifiOk ? COLOR_GREEN : COLOR_RED);
-    tft.print("WiFi");
-    tft.setTextColor(COLOR_TEXT);
-    tft.print("/");
     tft.setTextColor(mqttOk ? COLOR_GREEN : COLOR_RED);
     tft.print("MQTT");
 }
@@ -150,9 +150,9 @@ void drawHeader(uint16_t headerBgColor, const String& title, uint16_t titleTextC
 
     tft.fillScreen(COLOR_BACKGROUND);
 
-    tft.setTextSize(1);
-    tft.setTextColor(ST77XX_BLACK);
-    drawTextCentered("Smart Parking", 12, ST77XX_BLACK, 1);
+    tft.drawRoundRect(34, 7, 92, 18, 6, COLOR_RED);
+    tft.fillRoundRect(36, 9, 88, 14, 5, COLOR_BACKGROUND);
+    drawBoldTextCentered("BAI XE PTIT", 12, COLOR_RED, 1);
 
     tft.drawFastHLine(0, HEADER_LINE_Y, SCREEN_WIDTH, ST77XX_BLACK);
     tft.drawFastHLine(0, HEADER_LINE_Y + 1, SCREEN_WIDTH, ST77XX_BLACK);
@@ -174,7 +174,7 @@ void showBootingScreen(const String& step, int progressPercent) {
 
     tft.setTextColor(COLOR_BLUE);
     tft.setTextSize(1);
-    drawTextCentered("SMART PARKING", 58, COLOR_BLUE, 1);
+    drawTextCentered("BAI DO XE PTIT", 58, COLOR_BLUE, 1);
     
     tft.setTextSize(1);
     tft.setTextColor(COLOR_TEXT);
@@ -248,13 +248,13 @@ void showCheckInSuccess(const String& name, const String& plate, const String& e
     
     tft.setCursor(10, 56);
     tft.print("Chu xe: ");
-    tft.setTextColor(COLOR_YELLOW);
+    tft.setTextColor(COLOR_TEXT);
     tft.print(name);
     
     tft.setTextColor(COLOR_TEXT);
     tft.setCursor(10, 74);
     tft.print("Bien so: ");
-    tft.setTextColor(COLOR_YELLOW);
+    tft.setTextColor(COLOR_TEXT);
     tft.print(plate);
     
     tft.setTextColor(COLOR_TEXT);
@@ -275,7 +275,7 @@ void showCheckInSuccess(const String& name, const String& plate, const String& e
     tft.print("MO CONG VAO...");
 }
 
-void showCheckOutSuccess(const String& name, const String& plate, long fee, long balance) {
+void showCheckOutSuccess(const String& name, const String& plate, long fee) {
     invalidateIdleCache();
     currentScreenMode = SCREEN_CHECKOUT;
     drawHeader(COLOR_BLUE, "CHECK-OUT OK", ST77XX_BLACK);
@@ -286,13 +286,13 @@ void showCheckOutSuccess(const String& name, const String& plate, long fee, long
     
     tft.setCursor(10, 52);
     tft.print("Chu xe: ");
-    tft.setTextColor(COLOR_YELLOW);
+    tft.setTextColor(COLOR_TEXT);
     tft.print(name);
     
     tft.setTextColor(COLOR_TEXT);
     tft.setCursor(10, 68);
     tft.print("Bien so: ");
-    tft.setTextColor(COLOR_YELLOW);
+    tft.setTextColor(COLOR_TEXT);
     tft.print(plate);
     
     tft.setTextColor(COLOR_TEXT);
@@ -302,24 +302,17 @@ void showCheckOutSuccess(const String& name, const String& plate, long fee, long
     tft.print(fee);
     tft.print(" d");
 
-    tft.setTextColor(COLOR_TEXT);
-    tft.setCursor(10, 100);
-    tft.print("So du: ");
-    tft.setTextColor(COLOR_GREEN);
-    tft.print(balance);
-    tft.print(" d");
-
     tft.fillRect(0, FOOTER_Y, SCREEN_WIDTH, SCREEN_HEIGHT - FOOTER_Y, COLOR_BLUE);
     tft.setTextColor(ST77XX_BLACK);
     tft.setCursor(35, 113);
     tft.print("MO CONG RA...");
 }
 
-void showManualOpenScreen(const String& gateLabel, const String& reason) {
+void showManualBarrierScreen(const String& gateLabel, bool isOpening, const String& reason) {
     invalidateIdleCache();
-    currentScreenMode = SCREEN_MANUAL_OPEN;
-    drawHeader(COLOR_ORANGE, "MANUAL OPEN", ST77XX_BLACK);
-    drawSectionBanner("MO CONG THU CONG", COLOR_ORANGE, ST77XX_BLACK);
+    currentScreenMode = SCREEN_MANUAL_BARRIER;
+    drawHeader(COLOR_ORANGE, "MANUAL", ST77XX_BLACK);
+    drawSectionBanner(isOpening ? "MO CONG THU CONG" : "DONG CONG THU CONG", COLOR_ORANGE, ST77XX_BLACK);
 
     tft.setTextColor(COLOR_TEXT);
     tft.setTextSize(1);
@@ -337,12 +330,50 @@ void showManualOpenScreen(const String& gateLabel, const String& reason) {
 
     tft.setTextColor(COLOR_TEXT);
     tft.setCursor(10, 94);
-    tft.print("Trang thai: Dang mo");
+    tft.print("Trang thai: ");
+    tft.print(isOpening ? "Dang mo" : "Dang dong");
 
     tft.fillRect(0, FOOTER_Y, SCREEN_WIDTH, SCREEN_HEIGHT - FOOTER_Y, COLOR_ORANGE);
     tft.setTextColor(ST77XX_BLACK);
-    tft.setCursor(18, 113);
-    tft.print("DA GUI LEN WEB...");
+    tft.setCursor(12, 113);
+    tft.print(isOpening ? "DA MO VA GUI WEB" : "DA DONG VA GUI WEB");
+}
+
+void showCashPaymentPendingScreen(const String& name, const String& plate, long fee) {
+    invalidateIdleCache();
+    currentScreenMode = SCREEN_CASH_PAYMENT_PENDING;
+    drawHeader(COLOR_ORANGE, "TIEN MAT", ST77XX_BLACK);
+    drawSectionBanner("CHO XAC NHAN TIEN MAT", COLOR_ORANGE, ST77XX_BLACK);
+
+    tft.setTextColor(COLOR_TEXT);
+    tft.setTextSize(1);
+
+    tft.setCursor(10, 52);
+    tft.print("Chu xe: ");
+    tft.setTextColor(COLOR_TEXT);
+    tft.print(name);
+
+    tft.setTextColor(COLOR_TEXT);
+    tft.setCursor(10, 68);
+    tft.print("Bien so: ");
+    tft.setTextColor(COLOR_TEXT);
+    tft.print(plate);
+
+    tft.setTextColor(COLOR_TEXT);
+    tft.setCursor(10, 84);
+    tft.print("Thu tien mat: ");
+    tft.setTextColor(COLOR_RED);
+    tft.print(fee);
+    tft.print(" d");
+
+    tft.setTextColor(COLOR_TEXT);
+    tft.setCursor(10, 100);
+    tft.print("Bam nut CONG RA < 30s");
+
+    tft.fillRect(0, FOOTER_Y, SCREEN_WIDTH, SCREEN_HEIGHT - FOOTER_Y, COLOR_ORANGE);
+    tft.setTextColor(ST77XX_BLACK);
+    tft.setCursor(28, 113);
+    tft.print("CHO XAC NHAN...");
 }
 
 void showWarningScreen(const String& message) {

@@ -195,12 +195,6 @@ export async function logParkingEntry(uid: string, plateNumber: string, vehicleT
   const db = await getDB();
   const id = 'log_' + Math.random().toString(36).substring(2, 11);
   const time = entryTime || new Date().toISOString();
-  
-  // Clean up any dangling 'parked' logs for this user to prevent stuck entries
-  await db.run(
-    'UPDATE parking_logs SET status = "completed", exitTime = ?, fee = 0 WHERE uid = ? AND status = "parked"',
-    [time, uid]
-  );
 
   await db.run(
     'INSERT INTO parking_logs (id, uid, plateNumber, vehicleType, entryTime, exitTime, fee, status) VALUES (?, ?, ?, ?, ?, NULL, 0, "parked")',

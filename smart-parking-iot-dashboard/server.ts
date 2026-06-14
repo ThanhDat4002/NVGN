@@ -176,14 +176,22 @@ async function startServer() {
 
     // Determine event: check-in vs check-out
     let isEntry = true;
+    const lastLog = await getLastParkingLog(uid);
+    
     if (explicitEvent) {
       isEntry = (explicitEvent === 'checkin');
     } else {
-      const lastLog = await getLastParkingLog(uid);
       isEntry = !lastLog || lastLog.status === 'completed';
     }
 
     if (isEntry) {
+      if (lastLog && lastLog.status === 'parked') {
+        console.log(`Error: Vehicle already parked for UID ${uid}`);
+        mqttClient.publish(`${TOPIC_PREFIX}/response/${uid}`, JSON.stringify({ cmd: "error", msg: "Vehicle already parked" }));
+        mqttClient.publish(`${TOPIC_PREFIX}/response`, 'ERROR_ALREADY_PARKED');
+        return;
+      }
+
       // --- Process Check-In ---
       const log = await logParkingEntry(uid, user.plateNumber, user.vehicleType);
       
@@ -285,9 +293,9 @@ async function startServer() {
 
       // Revenue today
       const todayStr = new Date().toISOString().substring(0, 10);
-      const dailyRevenue = txs
-        .filter(t => t.type === 'subtraction' && t.timestamp.startsWith(todayStr))
-        .reduce((sum, t) => sum + t.amount, 0);
+      const dailyRevenue = logs
+        .filter(l => l.status === 'completed' && l.exitTime && l.exitTime.startsWith(todayStr))
+        .reduce((sum, l) => sum + (l.fee || 0), 0);
 
       // Total entries today
       const dailyEntries = logs.filter(l => l.entryTime.startsWith(todayStr)).length;

@@ -18,10 +18,13 @@ void showIdleScreen(const String& dateTimeStr, int parkedCount, bool wifiOk, boo
 void showCheckInSuccess(const String& name, const String& plate, const String& entryTime);
 
 // Hiển thị màn hình xe ra thành công (Check-Out)
-void showCheckOutSuccess(const String& name, const String& plate, long fee, long balance);
+void showCheckOutSuccess(const String& name, const String& plate, long fee);
 
-// Hiển thị màn hình mở cổng thủ công
-void showManualOpenScreen(const String& gateLabel, const String& reason);
+// Hiển thị màn hình thao tác cổng thủ công
+void showManualBarrierScreen(const String& gateLabel, bool isOpening, const String& reason);
+
+// Hiển thị màn hình chờ xác nhận thanh toán tiền mặt
+void showCashPaymentPendingScreen(const String& name, const String& plate, long fee);
 
 // Hiển thị màn hình báo lỗi (Thất bại)
 void showWarningScreen(const String& message);

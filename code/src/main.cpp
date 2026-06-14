@@ -52,10 +52,17 @@ uint32_t lastWifiCheckTime = 0;
 uint32_t lastMqttReconnectAttempt = 0;
 uint32_t displayResetTime = 0;
 bool isDisplayActiveMessage = false;
-uint32_t manualInPressStart = 0;
-uint32_t manualOutPressStart = 0;
-bool manualInLongPressHandled = false;
-bool manualOutLongPressHandled = false;
+bool manualInStableState = HIGH;
+bool manualOutStableState = HIGH;
+bool manualInLastReading = HIGH;
+bool manualOutLastReading = HIGH;
+uint32_t manualInLastDebounceTime = 0;
+uint32_t manualOutLastDebounceTime = 0;
+uint32_t manualOutIgnoreUntil = 0;
+bool cashCheckoutPending = false;
+String cashCheckoutUid = "";
+long cashCheckoutFee = 0;
+uint32_t cashCheckoutExpireTime = 0;
 
 // ==========================================
 // KHAI BÁO CÁC HÀM CON
@@ -81,6 +88,9 @@ void closeBarrierIn(const char* source);
 void openBarrierOut(const char* source);
 void closeBarrierOut(const char* source);
 void publishParkingEvent(const String& uid, const String& event, const String& timeStr, long fee = -1, long balance = -1);
+void startCashCheckout(const User& user, long fee);
+void completeCashCheckout();
+void clearCashCheckout();
 
 // ==========================================
 // HÀM SETUP KHỞI CHẠY HỆ THỐNG
@@ -220,6 +230,11 @@ void loop() {
     }
     if (barrierOutState == "open" && currentMillis > barrierOutCloseTime) {
         closeBarrierOut("tu dong");
+    }
+    if (cashCheckoutPending && currentMillis > cashCheckoutExpireTime) {
+        Serial.println("[WAIT_CASH_TIMEOUT] Het thoi gian xac nhan thanh toan tien mat.");
+        clearCashCheckout();
+        isDisplayActiveMessage = false;
     }
 
     // 5. Reset màn hình hiển thị về màn hình chờ mặc định sau 4 giây hiển thị thông báo checkin/checkout/lỗi
@@ -463,40 +478,63 @@ void processOfflineQueue() {
 }
 
 void handleManualButtons(uint32_t currentMillis) {
-    bool inPressed = digitalRead(MANUAL_OPEN_IN_BUTTON_PIN) == LOW;
-    if (inPressed) {
-        if (manualInPressStart == 0) {
-            manualInPressStart = currentMillis;
-        } else if (!manualInLongPressHandled &&
-                   currentMillis - manualInPressStart >= MANUAL_BUTTON_HOLD_MS) {
-            manualInLongPressHandled = true;
+    bool inReading = digitalRead(MANUAL_OPEN_IN_BUTTON_PIN);
+    if (inReading != manualInLastReading) {
+        manualInLastDebounceTime = currentMillis;
+        manualInLastReading = inReading;
+    }
+    if (currentMillis - manualInLastDebounceTime >= MANUAL_BUTTON_DEBOUNCE_MS &&
+        inReading != manualInStableState) {
+        manualInStableState = inReading;
+        if (manualInStableState == LOW) {
             isDisplayActiveMessage = true;
             displayResetTime = currentMillis + 4000;
-            showManualOpenScreen("CONG VAO", "Mo tay");
-            openBarrierIn("nut nhan thu cong");
-            publishParkingEvent("", "manual_open_in", getFormattedTime(getCurrentDateTime()));
+            if (barrierInState == "open") {
+                showManualBarrierScreen("CONG VAO", false, "Nut nhan");
+                closeBarrierIn("nut nhan thu cong");
+                publishParkingEvent("", "manual_close_in", getFormattedTime(getCurrentDateTime()));
+            } else {
+                showManualBarrierScreen("CONG VAO", true, "Nut nhan");
+                openBarrierIn("nut nhan thu cong");
+                publishParkingEvent("", "manual_open_in", getFormattedTime(getCurrentDateTime()));
+            }
         }
-    } else {
-        manualInPressStart = 0;
-        manualInLongPressHandled = false;
     }
 
-    bool outPressed = digitalRead(MANUAL_OPEN_OUT_BUTTON_PIN) == LOW;
-    if (outPressed) {
-        if (manualOutPressStart == 0) {
-            manualOutPressStart = currentMillis;
-        } else if (!manualOutLongPressHandled &&
-                   currentMillis - manualOutPressStart >= MANUAL_BUTTON_HOLD_MS) {
-            manualOutLongPressHandled = true;
+    bool outReading = digitalRead(MANUAL_OPEN_OUT_BUTTON_PIN);
+    if (outReading != manualOutLastReading) {
+        manualOutLastDebounceTime = currentMillis;
+        manualOutLastReading = outReading;
+    }
+    if (currentMillis - manualOutLastDebounceTime >= MANUAL_BUTTON_DEBOUNCE_MS &&
+        outReading != manualOutStableState) {
+        manualOutStableState = outReading;
+        if (manualOutStableState == LOW) {
+            if (currentMillis < manualOutIgnoreUntil) {
+                return;
+            }
+            if (cashCheckoutPending && currentMillis <= cashCheckoutExpireTime) {
+                completeCashCheckout();
+                return;
+            }
+            if (cashCheckoutPending) {
+                clearCashCheckout();
+            }
+
             isDisplayActiveMessage = true;
             displayResetTime = currentMillis + 4000;
-            showManualOpenScreen("CONG RA", "Tien mat");
-            openBarrierOut("nut nhan thu cong");
-            publishParkingEvent("", "manual_open_out_cash", getFormattedTime(getCurrentDateTime()));
+            if (barrierOutState == "open") {
+                manualOutIgnoreUntil = currentMillis + MANUAL_OUT_BUTTON_GUARD_MS;
+                showManualBarrierScreen("CONG RA", false, "Nut nhan");
+                closeBarrierOut("nut nhan thu cong");
+                publishParkingEvent("", "manual_close_out", getFormattedTime(getCurrentDateTime()));
+            } else {
+                manualOutIgnoreUntil = currentMillis + MANUAL_OUT_BUTTON_GUARD_MS;
+                showManualBarrierScreen("CONG RA", true, "Nut nhan");
+                openBarrierOut("nut nhan thu cong");
+                publishParkingEvent("", "manual_open_out", getFormattedTime(getCurrentDateTime()));
+            }
         }
-    } else {
-        manualOutPressStart = 0;
-        manualOutLongPressHandled = false;
     }
 }
 
@@ -556,7 +594,55 @@ void publishParkingEvent(const String& uid, const String& event, const String& t
         return;
     }
 
-    queueOfflineLog(uid, event, fee >= 0 ? fee : 0, balance >= 0 ? balance : 0, timeStr);
+    queueOfflineLog(uid, event, fee >= 0 ? fee : 0, balance >= 0 ? balance : 0, timeStr, fee >= 0 || balance >= 0);
+}
+
+void startCashCheckout(const User& user, long fee) {
+    cashCheckoutPending = true;
+    cashCheckoutUid = user.uid;
+    cashCheckoutFee = fee;
+    cashCheckoutExpireTime = millis() + CASH_CONFIRM_MS;
+    manualOutIgnoreUntil = 0;
+
+    Serial.printf("[WAIT_CASH_STARTED] UID=%s FEE=%ld BALANCE=%ld TIMEOUT_MS=%lu\n",
+                  user.uid.c_str(), fee, user.balance, static_cast<unsigned long>(CASH_CONFIRM_MS));
+
+    isDisplayActiveMessage = true;
+    displayResetTime = cashCheckoutExpireTime;
+    showCashPaymentPendingScreen(user.name, user.plateNumber, fee);
+    publishParkingEvent(user.uid, "checkout_wait_cash", getFormattedTime(getCurrentDateTime()), fee, user.balance);
+}
+
+void completeCashCheckout() {
+    if (!cashCheckoutPending) return;
+
+    User user;
+    if (!getUser(cashCheckoutUid, user)) {
+        clearCashCheckout();
+        return;
+    }
+
+    user.inParking = false;
+    user.entryTime = "";
+    saveUser(user);
+
+    String confirmTime = getFormattedTime(getCurrentDateTime());
+    isDisplayActiveMessage = true;
+    displayResetTime = millis() + 4000;
+    manualOutIgnoreUntil = millis() + MANUAL_OUT_BUTTON_GUARD_MS;
+    Serial.printf("[WAIT_CASH_CONFIRMED] UID=%s FEE=%ld TIME=%s\n",
+                  user.uid.c_str(), cashCheckoutFee, confirmTime.c_str());
+    showCheckOutSuccess(user.name, user.plateNumber, cashCheckoutFee);
+    openBarrierOut("xac nhan tien mat");
+    publishParkingEvent(user.uid, "checkout", confirmTime, cashCheckoutFee, user.balance);
+    clearCashCheckout();
+}
+
+void clearCashCheckout() {
+    cashCheckoutPending = false;
+    cashCheckoutUid = "";
+    cashCheckoutFee = 0;
+    cashCheckoutExpireTime = 0;
 }
 
 bool initRc522Reader(MFRC522& reader, const char* gateLabel) {
@@ -747,10 +833,7 @@ void processCheckOut(const String& uid) {
 
     // 5. Kiểm tra số dư tài khoản
     if (user.balance < fee) {
-        char errBuf[32];
-        snprintf(errBuf, sizeof(errBuf), "KHONG DU TIEN!\nPhi: %ld d\nDu: %ld d", fee, user.balance);
-        showWarningScreen(String(errBuf));
-        beepWarning();
+        startCashCheckout(user, fee);
         return;
     }
 
@@ -763,7 +846,7 @@ void processCheckOut(const String& uid) {
                   uid.c_str(), user.balance);
 
     // 7. Hiển thị thông tin xe ra lên TFT và còi bíp thành công
-    showCheckOutSuccess(user.name, user.plateNumber, fee, user.balance);
+    showCheckOutSuccess(user.name, user.plateNumber, fee);
 
     // 8. Điều khiển mở barrier cổng ra
     openBarrierOut("quet the hop le");

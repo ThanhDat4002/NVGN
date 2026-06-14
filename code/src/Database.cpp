@@ -1,5 +1,24 @@
 #include "Database.h"
 
+namespace {
+constexpr const char* OFFLINE_LOG_PATH = "/offline_logs.json";
+
+bool ensureOfflineLogFile() {
+    if (LittleFS.exists(OFFLINE_LOG_PATH)) {
+        return true;
+    }
+
+    File file = LittleFS.open(OFFLINE_LOG_PATH, "w");
+    if (!file) {
+        return false;
+    }
+
+    file.print("[]");
+    file.close();
+    return true;
+}
+}
+
 // Hàm phụ để lấy đường dẫn tệp người dùng từ UID
 static String getUserFilePath(const String& uid) {
     return "/u_" + uid + ".json";
@@ -10,6 +29,7 @@ bool initDatabase() {
         Serial.println("[-] Khoi tao LittleFS THAT BAI!");
         return false;
     }
+    ensureOfflineLogFile();
     Serial.println("[+] Khoi tao LittleFS thanh cong.");
     return true;
 }
@@ -102,7 +122,8 @@ void clearDatabase() {
         }
         file = root.openNextFile();
     }
-    LittleFS.remove("/offline_logs.json");
+    LittleFS.remove(OFFLINE_LOG_PATH);
+    ensureOfflineLogFile();
     Serial.println("[+] Da xoa toan bo co so du lieu cuc bo.");
 }
 
@@ -110,16 +131,18 @@ void clearDatabase() {
 // QUẢN LÝ HÀNG ĐỢI OFFLINE LOGS (ĐỒNG BỘ SAU KHI CÓ MẠNG)
 // ========================================================
 
-bool queueOfflineLog(const String& uid, const String& event, long fee, long balance, const String& timeStr) {
+bool queueOfflineLog(const String& uid, const String& event, long fee, long balance, const String& timeStr, bool includeAmounts) {
+    if (!ensureOfflineLogFile()) {
+        return false;
+    }
+
     DynamicJsonDocument doc(2048);
     
     // Nếu tệp tin đã tồn tại, đọc nội dung cũ vào
-    if (LittleFS.exists("/offline_logs.json")) {
-        File file = LittleFS.open("/offline_logs.json", "r");
-        if (file) {
-            deserializeJson(doc, file);
-            file.close();
-        }
+    File file = LittleFS.open(OFFLINE_LOG_PATH, "r");
+    if (file) {
+        deserializeJson(doc, file);
+        file.close();
     }
     
     // Nếu chưa có mảng, tạo mảng mới
@@ -133,13 +156,13 @@ bool queueOfflineLog(const String& uid, const String& event, long fee, long bala
     newLog["uid"] = uid;
     newLog["event"] = event;
     newLog["time"] = timeStr;
-    if (event == "checkout") {
+    if (includeAmounts) {
         newLog["fee"] = fee;
         newLog["balance"] = balance;
     }
 
     // Ghi lại vào LittleFS
-    File file = LittleFS.open("/offline_logs.json", "w");
+    file = LittleFS.open(OFFLINE_LOG_PATH, "w");
     if (!file) {
         return false;
     }
@@ -151,11 +174,11 @@ bool queueOfflineLog(const String& uid, const String& event, long fee, long bala
 }
 
 bool getNextOfflineLog(String& logPayload) {
-    if (!LittleFS.exists("/offline_logs.json")) {
+    if (!ensureOfflineLogFile()) {
         return false;
     }
 
-    File file = LittleFS.open("/offline_logs.json", "r");
+    File file = LittleFS.open(OFFLINE_LOG_PATH, "r");
     if (!file) {
         return false;
     }
@@ -179,11 +202,11 @@ bool getNextOfflineLog(String& logPayload) {
 }
 
 bool popOfflineLog() {
-    if (!LittleFS.exists("/offline_logs.json")) {
+    if (!ensureOfflineLogFile()) {
         return false;
     }
 
-    File file = LittleFS.open("/offline_logs.json", "r");
+    File file = LittleFS.open(OFFLINE_LOG_PATH, "r");
     if (!file) {
         return false;
     }
@@ -205,7 +228,7 @@ bool popOfflineLog() {
     arr.remove(0);
 
     // Ghi lại tệp tin
-    file = LittleFS.open("/offline_logs.json", "w");
+    file = LittleFS.open(OFFLINE_LOG_PATH, "w");
     if (!file) {
         return false;
     }
@@ -215,11 +238,11 @@ bool popOfflineLog() {
 }
 
 int getOfflineLogCount() {
-    if (!LittleFS.exists("/offline_logs.json")) {
+    if (!ensureOfflineLogFile()) {
         return 0;
     }
 
-    File file = LittleFS.open("/offline_logs.json", "r");
+    File file = LittleFS.open(OFFLINE_LOG_PATH, "r");
     if (!file) {
         return 0;
     }

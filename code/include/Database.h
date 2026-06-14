@@ -27,7 +27,7 @@ bool deleteUser(const String& uid);
 void clearDatabase();
 
 // Quản lý hàng đợi giao dịch ngoại tuyến (Offline Logs Queue)
-bool queueOfflineLog(const String& uid, const String& event, long fee, long balance, const String& timeStr);
+bool queueOfflineLog(const String& uid, const String& event, long fee, long balance, const String& timeStr, bool includeAmounts = false);
 bool getNextOfflineLog(String& logPayload);
 bool popOfflineLog();
 int getOfflineLogCount();

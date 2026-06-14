@@ -64,7 +64,9 @@
 // 7. Nút nhấn mở cổng thủ công
 #define MANUAL_OPEN_IN_BUTTON_PIN   6
 #define MANUAL_OPEN_OUT_BUTTON_PIN  7
-#define MANUAL_BUTTON_HOLD_MS       2000
+#define MANUAL_BUTTON_DEBOUNCE_MS   80
+#define MANUAL_OUT_BUTTON_GUARD_MS  800
+#define CASH_CONFIRM_MS             30000
 
 // ==========================================
 // CẤU HÌNH PHÍ GỬI XE (VNĐ)
