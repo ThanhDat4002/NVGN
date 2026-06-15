@@ -2,8 +2,6 @@
 #define WIFI_MQTT_CLIENT_H
 
 #include <Arduino.h>
-
-// =========================================================================
 //  WifiMqttClient
 //  ------------------------------------------------------------
 //  Bao gom tat ca cong viec lien quan MQTT/WiFi cua he thong:
@@ -18,7 +16,6 @@
 //      initWifiMqtt() trong setup()
 //      maintainWifi(currentMillis); maintainMqtt(currentMillis);
 //      maintainHeartbeat(currentMillis); trong loop()
-// =========================================================================
 
 // Khoi tao WiFi + MQTT broker (chua connect MQTT). Goi mot lan tu setup().
 void initWifiMqtt();

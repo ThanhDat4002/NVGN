@@ -1,0 +1,24 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "PlatformIO: Build Local Core",
+      "type": "shell",
+      "command": "D:\\PlatformIO\\penv\\Scripts\\platformio.exe",
+      "args": [
+        "run"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PLATFORMIO_CORE_DIR": "${workspaceFolder}\\.pio-core"
+        }
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}

@@ -4,7 +4,6 @@
 #include <Arduino.h>
 #include <RTClib.h>
 
-// =========================================================================
 //  TimeManager
 //  ------------------------------------------------------------
 //  Quan ly toan bo thoi gian he thong:
@@ -15,7 +14,6 @@
 //
 //  Doi tuong global noi bo (rtc, isRtcOk, fallback base, lastNtpSyncTime)
 //  duoc dau goi trong file .cpp -> main.cpp khong can biet.
-// =========================================================================
 
 // Khoi tao DS3231 + Wire bus. Goi mot lan tu setup().
 // - Neu tim thay RTC va RTC mat nguon: dat lai gio compile lam moc.

@@ -1,4 +1,5 @@
 .pio
+.pio-build*
 .pio-core
 *.bak
 .vscode/.browse.c_cpp.db*

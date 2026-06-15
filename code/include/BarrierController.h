@@ -3,14 +3,6 @@
 
 #include <Arduino.h>
 
-// =========================================================================
-//  BarrierController
-//  ------------------------------------------------------------
-//  Quan ly hai servo barrier (cong vao / cong ra):
-//      - Khoi tao timer PWM va servo
-//      - Mo / Dong tung cong, ghi nhan trang thai va thoi diem tu dong dong
-//      - Goi maintainBarriers() moi vong loop() de tu dong dong sau delay
-// =========================================================================
 
 // Khoi tao servo, phai goi sau khi ESP32PWM duoc cap phat timer.
 void initBarriers();

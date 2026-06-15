@@ -35,16 +35,29 @@ long calculateParkingFee(const String& entryTimeStr, const DateTime& exitTime) {
         return FEE_DAYTIME;
     }
 
-    // 1. Gui qua dem (khac ngay)
-    if (ey != exitTime.year() || em != exitTime.month() || ed != exitTime.day()) {
-        return FEE_OVERNIGHT;
+    DateTime entryDate(ey, em, ed, 0, 0, 0);
+    DateTime exitDate(exitTime.year(), exitTime.month(), exitTime.day(), 0, 0, 0);
+    long overnightCount = 0;
+    if (exitDate.unixtime() > entryDate.unixtime()) {
+        overnightCount = static_cast<long>((exitDate.unixtime() - entryDate.unixtime()) / 86400UL);
     }
 
-    // 2. Cung ngay - xe ra sau 18:00
+    if (overnightCount > 0) {
+        long fee = overnightCount * FEE_OVERNIGHT;
+        if (exitTime.hour() < FEE_NEXT_DAY_FREE_UNTIL_HOUR) {
+            return fee;
+        }
+        if (exitTime.hour() >= 18) {
+            return fee + FEE_NIGHTTIME;
+        }
+        return fee + FEE_DAYTIME;
+    }
+
+    // Cung ngay - xe ra sau 18:00
     if (exitTime.hour() >= 18) {
         return FEE_NIGHTTIME;
     }
-    // 2.1. Xe vao va ra trong khoang 07:00 -> 18:00
+    // Xe vao va ra cung ngay truoc 18:00
     return FEE_DAYTIME;
 }
 

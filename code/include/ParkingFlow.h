@@ -3,19 +3,6 @@
 
 #include <Arduino.h>
 
-// =========================================================================
-//  ParkingFlow
-//  ------------------------------------------------------------
-//  Toan bo nghiep vu cua bai xe:
-//      - Xu ly the quet vao bai (check-in)
-//      - Xu ly the quet ra bai (check-out)
-//      - Tinh phi gui xe
-//      - Quan ly trang thai cho thanh toan tien mat
-//      - Quan ly co "man hinh dang ban" va guard cua nut OUT
-//
-//  Goi tu main.cpp / RfidGates / handleManualButtons.
-// =========================================================================
-
 // ----------------- Cac luong nghiep vu chinh -----------------
 void processCheckIn(const String& uid);
 void processCheckOut(const String& uid);

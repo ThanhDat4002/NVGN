@@ -3,21 +3,6 @@
 
 #include <Arduino.h>
 
-// =========================================================================
-//  RfidGates
-//  ------------------------------------------------------------
-//  Quan ly 2 dau doc MFRC522 (cong vao / cong ra) dung chung SPI bus.
-//      - Khoi tao, kiem tra version
-//      - Quet tuan tu trong loop(), debounce UID
-//      - Khi co the moi: goi callback do main.cpp dang ky truoc
-//
-//  Cach dung:
-//      initRfidGates(processCheckIn, processCheckOut);
-//      ...
-//      void loop() {
-//          pollRfidGates();
-//      }
-// =========================================================================
 
 typedef void (*RfidScanCallback)(const String& uid);
 

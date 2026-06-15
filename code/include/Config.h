@@ -75,4 +75,6 @@
 #define FEE_NIGHTTIME     5000   // Cùng ngày, ra sau 18:00
 #define FEE_OVERNIGHT     11000  // Khác ngày gửi (qua đêm)
 
+#define FEE_NEXT_DAY_FREE_UNTIL_HOUR 6 // Qua ngay, ra truoc gio nay thi khong cong phi ngay cuoi
+
 #endif // CONFIG_H
